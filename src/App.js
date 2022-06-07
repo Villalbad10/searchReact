@@ -1,24 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from "react";
+import getData from "./helpers/getData";
+import NavComponent from './components/NavComponent'
+import Pintarcard from "./components/Pintarcard";
+import UseForm from "./hook/UseForm";
+import filterName from "./components/filterName"
 
 function App() {
+  const [busqueda, handleChange] = UseForm({
+    search: ''
+  })
+  const { search } = busqueda;
+  const [data, setData] = useState([])
+
+  useEffect(() => {
+    getData()
+      .then(res => setData(res))
+  }, [])
+
+  const filtro = filterName(data, search);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setData(filtro)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <NavComponent change={handleChange} submi={handleSubmit} />
+
+      <div className="container d-flex flex-wrap mt-3 justify-content-center">
+        {data.map(peli => (
+          <Pintarcard key={peli.id} {...peli} />
+        ))
+        }
+      </div>
+
+    </>
   );
 }
 
